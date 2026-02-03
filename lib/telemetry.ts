@@ -128,8 +128,9 @@ async function sendToExternalAnalytics(
   properties: TelemetryProperties,
   userId?: string
 ): Promise<void> {
-  // Check if external analytics is configured
-  if (!env.ANALYTICS_WRITE_KEY) {
+  // Check if external analytics is configured (server-side only)
+  const analyticsKey = process.env.ANALYTICS_WRITE_KEY;
+  if (!analyticsKey) {
     return; // No external analytics configured
   }
   
@@ -569,6 +570,3 @@ export async function getAgentPerformanceMetrics(agentType: string, days = 7) {
     disagreementRate: totalResponses > 0 ? disagreements / totalResponses : 0,
   };
 }
-
-// Export types
-export type { TelemetryEventType, TelemetryProperties, TelemetryOptions };

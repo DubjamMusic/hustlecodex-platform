@@ -142,17 +142,17 @@ export const env = parseEnv();
 /**
  * Type-safe way to check if we're in production
  */
-export const isProduction = env.NODE_ENV === 'production';
+export const isProduction = process.env.NODE_ENV === 'production';
 
 /**
  * Type-safe way to check if we're in development
  */
-export const isDevelopment = env.NODE_ENV === 'development';
+export const isDevelopment = process.env.NODE_ENV === 'development';
 
 /**
  * Type-safe way to check if debug mode is enabled
  */
-export const isDebugMode = env.DEBUG_MODE;
+export const isDebugMode = process.env.DEBUG_MODE === 'true';
 
 /**
  * Helper to parse feature flags from string
@@ -173,7 +173,9 @@ export function parseFeatureFlags(flagString?: string): Record<string, boolean> 
 /**
  * Get parsed feature flags from environment
  */
-export const localFeatureFlags = parseFeatureFlags(env.FEATURE_FLAGS);
+export const localFeatureFlags = typeof window === 'undefined'
+  ? parseFeatureFlags(process.env.FEATURE_FLAGS)
+  : {};
 
 /**
  * Export types for use in other files

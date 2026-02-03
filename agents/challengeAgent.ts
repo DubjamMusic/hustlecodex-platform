@@ -11,7 +11,6 @@
  */
 
 import OpenAI from 'openai';
-import { env } from '@/lib/env';
 import type { MemoryFragment } from '@prisma/client';
 
 // ============================================================================
@@ -67,13 +66,14 @@ let openaiClient: OpenAI | null = null;
  * Lazy initialization to avoid errors if API key is missing
  */
 function getOpenAIClient(): OpenAI | null {
-  if (!env.OPENAI_API_KEY) {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) {
     return null;
   }
   
   if (!openaiClient) {
     openaiClient = new OpenAI({
-      apiKey: env.OPENAI_API_KEY,
+      apiKey,
       timeout: CHALLENGE_AGENT_CONFIG.timeout,
     });
   }
@@ -172,7 +172,10 @@ export async function callChallengeAgent(
   const startTime = Date.now();
   
   // Check if we should use mock responses
-  if (env.MOCK_AI_RESPONSES || !env.OPENAI_API_KEY) {
+  const mockAI = process.env.MOCK_AI_RESPONSES === 'true';
+  const hasApiKey = Boolean(process.env.OPENAI_API_KEY);
+  
+  if (mockAI || !hasApiKey) {
     console.log('🤖 Challenge Agent: Using mock response (MOCK_AI_RESPONSES=true or no API key)');
     return generateMockResponse(decisionText, context);
   }
@@ -254,8 +257,10 @@ export async function* streamChallengeAgent(
  * Useful for UI to show appropriate messaging
  */
 export function isChallengeAgentAvailable(): boolean {
-  return Boolean(env.OPENAI_API_KEY) || env.MOCK_AI_RESPONSES;
+  const mockAI = process.env.MOCK_AI_RESPONSES === 'true';
+  const hasApiKey = Boolean(process.env.OPENAI_API_KEY);
+  return hasApiKey || mockAI;
 }
 
 // Export types
-export type { MemoryFragment, AgentOptions };
+export type { MemoryFragment };

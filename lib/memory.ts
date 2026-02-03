@@ -27,7 +27,7 @@ export const MEMORY_CONFIG = {
   MIN_CONFIDENCE_SCORE: 0.5, // Low-confidence memories are weighted less
   
   // Limits (free tier)
-  FREE_TIER_MEMORY_LIMIT: parseInt(env.FREE_TIER_MEMORY_LIMIT || '100'),
+  FREE_TIER_MEMORY_LIMIT: parseInt(process.env.FREE_TIER_MEMORY_LIMIT || '100'),
   PREMIUM_TIER_MEMORY_LIMIT: 10000, // Effectively unlimited
   
   // Retrieval

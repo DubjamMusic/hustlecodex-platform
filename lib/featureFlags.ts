@@ -67,8 +67,9 @@ const CACHE_TTL_MS = 60000; // 1 minute
  * Falls back to environment variables if Edge Config is not available
  */
 async function getEdgeConfigFlag(flagKey: string): Promise<boolean | null> {
-  // Check if Edge Config is configured
-  if (!env.EDGE_CONFIG) {
+  // Check if Edge Config is configured (server-side only)
+  const edgeConfig = process.env.EDGE_CONFIG;
+  if (!edgeConfig) {
     return null;
   }
   
@@ -80,7 +81,8 @@ async function getEdgeConfigFlag(flagKey: string): Promise<boolean | null> {
   
   try {
     // Get all flags from Edge Config
-    const flags = await getEdgeConfig<Record<string, boolean>>(env.EDGE_CONFIG_ITEM_KEY);
+    const itemKey = process.env.EDGE_CONFIG_ITEM_KEY || 'hustlecodex_features';
+    const flags = await getEdgeConfig<Record<string, boolean>>(itemKey);
     
     if (!flags) {
       return null;
@@ -251,6 +253,3 @@ export async function isPremiumFeatureEnabled(
 export function clearFeatureFlagCache(): void {
   edgeConfigCache.clear();
 }
-
-// Export types
-export type { FeatureKey };

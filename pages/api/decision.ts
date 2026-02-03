@@ -103,7 +103,7 @@ async function checkFeatureAccess(userId: string): Promise<{
   });
   
   const limit = user.tier === 'free' 
-    ? parseInt(env.FREE_TIER_DECISION_LIMIT || '50')
+    ? parseInt(process.env.FREE_TIER_DECISION_LIMIT || '50')
     : 999999; // Effectively unlimited for premium users
   
   if (decisionsToday >= limit) {

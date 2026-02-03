@@ -15,7 +15,8 @@ import {
   ChevronRight,
   Flame,
   Target,
-  Users
+  Users,
+  Brain
 } from 'lucide-react';
 
 // Dashboard component for after onboarding
@@ -138,6 +139,14 @@ function Dashboard() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {[
               { 
+                title: 'Decision Loop', 
+                description: 'Get AI insights on your choices',
+                icon: Brain,
+                color: '#00D4AA',
+                disabled: false,
+                href: '/decision',
+              },
+              { 
                 title: 'Daily Check-in', 
                 description: 'Log your progress and mood',
                 icon: Calendar,
@@ -151,20 +160,16 @@ function Dashboard() {
                 color: '#7B68EE',
                 disabled: selectedPath === 'recovery',
               },
-              { 
-                title: 'View Goals', 
-                description: 'Track your progress',
-                icon: Target,
-                color: '#00D4AA',
-                disabled: false,
-              },
             ].map((action, index) => {
               const Icon = action.icon;
+              const ActionElement = action.href ? 'a' : 'button';
               return (
-                <button
+                <ActionElement
                   key={action.title}
+                  href={action.href}
+                  onClick={action.href ? undefined : undefined}
                   disabled={action.disabled}
-                  className={`glass-card rounded-2xl p-6 text-left transition-all group ${
+                  className={`glass-card rounded-2xl p-6 text-left transition-all group block ${
                     action.disabled 
                       ? 'opacity-50 cursor-not-allowed' 
                       : 'hover:scale-[1.02] cursor-pointer'
@@ -191,7 +196,7 @@ function Dashboard() {
                       Not available on your current path
                     </p>
                   )}
-                </button>
+                </ActionElement>
               );
             })}
           </div>

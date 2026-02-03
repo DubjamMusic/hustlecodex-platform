@@ -25,7 +25,7 @@ export default function DecisionPage() {
   return (
     <>
       <Head>
-        <title>Decision Loop - HustleCodex</title>
+        <title>Decision Loop - HustleCodeX</title>
         <meta name="description" content="Get AI-powered insights on your decisions from multiple perspectives" />
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
       </Head>
@@ -38,7 +38,7 @@ export default function DecisionPage() {
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-hustlex-cyan to-hustlex-purple flex items-center justify-center">
                 <Sparkles size={20} className="text-white" />
               </div>
-              <span className="text-xl font-bold text-white">HustleCodex</span>
+              <span className="text-xl font-bold text-white">HustleCodeX</span>
             </div>
             
             <Link 

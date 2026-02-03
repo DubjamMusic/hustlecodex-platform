@@ -95,13 +95,13 @@ function generateMockResponse(
 ): ChallengeAgentResponse {
   return {
     agentType: 'challenge',
-    responseText: `Let me challenge you on: "${decisionText}". Have you considered all potential risks? While your context shows thought, I want you to dig deeper into the "what ifs" that could derail this choice. Recovery requires us to anticipate obstacles, not just hope for the best.`,
+    responseText: `Let me challenge you on: "${decisionText}". Have you considered all potential risks? While your context shows thought, I want you to dig deeper into the "what ifs" that could derail this choice. Every decision has trade-offs and potential obstacles that need careful consideration.`,
     confidenceScore: 0.75,
-    reasoning: 'Based on the decision and context, there may be hidden risks or blind spots that need addressing. The language suggests optimism, but we need to balance that with realism.',
+    reasoning: 'Based on the decision and context, there may be hidden risks or blind spots that need addressing. The language suggests optimism, but we need to balance that with realistic planning.',
     suggestedActions: [
       'List 3 things that could go wrong with this decision',
-      'Identify your triggers and how this decision affects them',
-      'Talk to someone who might disagree with this choice',
+      'Identify potential obstacles and how you\'ll handle them',
+      'Talk to someone who might have a different perspective',
     ],
     latencyMs: 50,
     model: 'mock-model',

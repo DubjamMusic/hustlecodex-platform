@@ -95,12 +95,12 @@ function generateMockResponse(
 ): AffirmAgentResponse {
   return {
     agentType: 'affirm',
-    responseText: `I support your decision to: "${decisionText}". This shows self-awareness and proactive thinking. Your context suggests you're considering the long-term implications, which is a strong recovery skill. Trust your instincts while staying mindful of your support network.`,
+    responseText: `I support your decision to: "${decisionText}". This shows self-awareness and proactive thinking. Your context suggests you're considering the long-term implications, which demonstrates maturity and careful planning. Trust your judgment while staying open to feedback and support.`,
     confidenceScore: 0.85,
-    reasoning: 'Based on the decision text and context provided, this appears to be a thoughtful choice that aligns with recovery principles. The language used suggests careful consideration.',
+    reasoning: 'Based on the decision text and context provided, this appears to be a thoughtful choice. The language used suggests careful consideration and awareness of potential outcomes.',
     suggestedActions: [
-      'Discuss this decision with your sponsor or support group',
-      'Journal about your feelings after making this choice',
+      'Discuss this decision with someone you trust',
+      'Journal about your reasoning and expected outcomes',
       'Set a reminder to check in with yourself in 24 hours',
     ],
     latencyMs: 50,

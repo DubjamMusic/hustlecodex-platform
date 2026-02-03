@@ -137,6 +137,15 @@ async function sendToExternalAnalytics(
   try {
     // Example: Send to Segment/Mixpanel/Amplitude
     // Customize this based on your analytics provider
+    // 
+    // Supported providers:
+    // - Segment: https://segment.com/docs/connections/sources/catalog/libraries/server/http-api/
+    // - Mixpanel: https://developer.mixpanel.com/docs/http
+    // - Amplitude: https://www.docs.developers.amplitude.com/analytics/apis/http-v2-api/
+    // - Plausible: https://plausible.io/docs/events-api
+    // 
+    // TODO: Implement actual API call based on ANALYTICS_WRITE_KEY provider
+    // Issue: https://github.com/DubjamMusic/hustlecodex-platform/issues/TBD
     const payload = {
       event: eventName,
       userId,
@@ -148,7 +157,6 @@ async function sendToExternalAnalytics(
       },
     };
     
-    // TODO: Implement actual API call to your analytics service
     // Example for Segment:
     // await fetch('https://api.segment.io/v1/track', {
     //   method: 'POST',
@@ -159,7 +167,7 @@ async function sendToExternalAnalytics(
     //   body: JSON.stringify(payload),
     // });
     
-    console.log('📊 External analytics:', eventName, payload);
+    console.log('📊 External analytics (not yet implemented):', eventName, payload);
   } catch (error) {
     console.error('Failed to send to external analytics:', error);
     // Don't throw - telemetry failures shouldn't break app

@@ -324,6 +324,7 @@ Fix any type errors before building for production.
 
 ## Resources
 
+- [API Documentation](./API.md) - **Complete API reference with examples**
 - [Supabase Documentation](https://supabase.com/docs)
 - [OpenAI API Documentation](https://platform.openai.com/docs)
 - [Next.js Documentation](https://nextjs.org/docs)

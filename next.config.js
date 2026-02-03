@@ -19,10 +19,21 @@ const nextConfig = {
   trailingSlash: false,
   images: {
     unoptimized: true,
-    domains: ['hustlecodex.com', 'localhost'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'hustlecodex.com',
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+      },
+    ],
   },
   compress: true,
   poweredByHeader: false,
+  // Empty turbopack config to allow webpack config from PWA plugin
+  turbopack: {},
 };
 
 module.exports = withPWA(nextConfig);

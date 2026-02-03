@@ -26,11 +26,13 @@ function Dashboard() {
   
   const avatarData = AVATARS.find(a => a.id === selectedAvatar);
   
-  const pathInfo = {
+  const pathInfo: Record<string, { name: string; color: string; icon: React.ComponentType<any> }> = {
     recovery: { name: 'Recovery Focus', color: '#EC4899', icon: Calendar },
     skills: { name: 'Skill Building', color: '#7B68EE', icon: Code },
     hybrid: { name: 'Hybrid Path', color: '#00D4AA', icon: Sparkles },
-  }[selectedPath || 'hybrid'];
+  };
+  
+  const selectedPathInfo = pathInfo[selectedPath || 'hybrid'];
 
   const handleResetOnboarding = () => {
     resetOnboarding();
@@ -87,12 +89,12 @@ function Dashboard() {
                 <span 
                   className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium"
                   style={{ 
-                    backgroundColor: `${pathInfo?.color}20`,
-                    color: pathInfo?.color 
+                    backgroundColor: `${selectedPathInfo?.color}20`,
+                    color: selectedPathInfo?.color 
                   }}
                 >
-                  {pathInfo?.icon && <pathInfo.icon size={12} />}
-                  {pathInfo?.name}
+                  {selectedPathInfo?.icon && <selectedPathInfo.icon size={12} />}
+                  {selectedPathInfo?.name}
                 </span>
               </p>
             </div>
@@ -212,26 +214,27 @@ function Dashboard() {
             <h2 className="text-lg font-semibold text-white mb-4">Your Goals</h2>
             <div className="glass-card rounded-2xl p-6">
               <div className="space-y-4">
-                {goals.map((goal, index) => {
-                  const goalInfo = {
+                {goals.map((goal: any, index: number) => {
+                  const goalInfo: Record<string, { label: string; icon: React.ComponentType<any>; color: string }> = {
                     sobriety: { label: 'Days Sober', icon: Calendar, color: '#EC4899' },
                     skills: { label: 'Skills to Learn', icon: Code, color: '#7B68EE' },
                     projects: { label: 'Projects to Build', icon: Trophy, color: '#00D4AA' },
-                  }[goal.type];
+                  };
                   
-                  const Icon = goalInfo?.icon || Target;
+                  const currentGoalInfo = goalInfo[goal.type] || { label: goal.type, icon: Target, color: '#00D4AA' };
+                  const Icon = currentGoalInfo.icon;
                   
                   return (
                     <div key={index} className="flex items-center gap-4">
                       <div 
                         className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                        style={{ backgroundColor: `${goalInfo?.color}20` }}
+                        style={{ backgroundColor: `${currentGoalInfo.color}20` }}
                       >
-                        <Icon size={20} style={{ color: goalInfo?.color }} />
+                        <Icon size={20} style={{ color: currentGoalInfo.color }} />
                       </div>
                       <div className="flex-1">
                         <div className="flex justify-between mb-1">
-                          <span className="text-white font-medium">{goalInfo?.label}</span>
+                          <span className="text-white font-medium">{currentGoalInfo.label}</span>
                           <span className="text-gray-400">0 / {goal.value} {goal.unit}</span>
                         </div>
                         <div className="h-2 bg-white/5 rounded-full overflow-hidden">
@@ -239,7 +242,7 @@ function Dashboard() {
                             className="h-full rounded-full transition-all"
                             style={{ 
                               width: '0%',
-                              backgroundColor: goalInfo?.color 
+                              backgroundColor: currentGoalInfo.color 
                             }}
                           />
                         </div>

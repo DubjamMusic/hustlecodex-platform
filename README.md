@@ -28,7 +28,7 @@ Reality Recovery Playing Game — built with Next.js, TypeScript, and TailwindCS
 - **User Profiles**: Track recovery status, streaks, and achievements
 - **Community Features**: Resource mapping and peer support (coming soon)
 
-[📖 Full Nexus Recovery Setup Guide](./docs/NEXUS_RECOVERY_SETUP.md)
+[📖 Full Nexus Recovery Setup Guide](./docs/NEXUS_RECOVERY_SETUP.md) | [🔌 API Documentation](./docs/API.md)
 
 ### 🚀 Technical Stack
 - **Framework**: Next.js 15.5 (Hybrid Router)
@@ -358,6 +358,7 @@ This project is part of HustleCodex V3 - Reality Recovery Playing Game.
 
 ## 📚 Documentation
 
+- [API Documentation](./docs/API.md) - **NEW!** Complete API reference with examples
 - [Next.js Documentation](https://nextjs.org/docs)
 - [Tailwind CSS Documentation](https://tailwindcss.com/docs)
 - [TypeScript Handbook](https://www.typescriptlang.org/docs/)

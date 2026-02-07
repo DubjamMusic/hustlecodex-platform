@@ -14,14 +14,26 @@ const withPWA = require('@ducanh2912/next-pwa').default({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  output: 'export',
-  trailingSlash: true,
+  // Note: output: 'export' is removed to support API routes for decision loop
+  // If you need static export, you'll need to disable the decision API
+  trailingSlash: false,
   images: {
     unoptimized: true,
-    domains: ['hustlecodex.com', 'localhost'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'hustlecodex.com',
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+      },
+    ],
   },
   compress: true,
   poweredByHeader: false,
+  // Empty turbopack config to allow webpack config from PWA plugin
+  turbopack: {},
 };
 
 module.exports = withPWA(nextConfig);

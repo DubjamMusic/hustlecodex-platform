@@ -12,20 +12,23 @@ import ProfileCreationScreen from '../components/onboarding/ProfileCreationScree
 // Completion celebration component
 function CompletionCelebration({ onContinue }: { onContinue: () => void }) {
   const { username, selectedAvatar, selectedPath } = useOnboardingStore();
-  const avatarEmoji = {
+  const avatarEmoji: Record<string, string> = {
     phoenix: '🔥',
     cipher: '🔐',
     sage: '🧙',
     nova: '⭐',
     titan: '💪',
     echo: '🌊',
-  }[selectedAvatar || 'nova'] || '⭐';
-
-  const pathName = {
+  };
+  
+  const pathName: Record<string, string> = {
     recovery: 'Recovery Focus',
     skills: 'Skill Building',
     hybrid: 'Hybrid Path',
-  }[selectedPath || 'hybrid'] || 'Your Journey';
+  };
+  
+  const currentEmoji = avatarEmoji[selectedAvatar || 'nova'] || '⭐';
+  const currentPathName = pathName[selectedPath || 'hybrid'] || 'Your Journey';
 
   return (
     <motion.div
@@ -68,7 +71,7 @@ function CompletionCelebration({ onContinue }: { onContinue: () => void }) {
           transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.2 }}
           className="text-8xl mb-8"
         >
-          {avatarEmoji}
+          {currentEmoji}
         </motion.div>
 
         <motion.h1
@@ -86,7 +89,7 @@ function CompletionCelebration({ onContinue }: { onContinue: () => void }) {
           transition={{ delay: 0.6 }}
           className="text-gray-400 text-lg md:text-xl mb-8"
         >
-          Your <span className="text-hustlex-cyan">{pathName}</span> journey begins now.
+          Your <span className="text-hustlex-cyan">{currentPathName}</span> journey begins now.
           <br />
           Let's build your digital empire together.
         </motion.p>

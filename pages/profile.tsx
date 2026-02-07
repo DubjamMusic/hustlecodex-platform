@@ -32,11 +32,13 @@ export default function ProfilePage() {
 
   const avatarData = AVATARS.find(a => a.id === selectedAvatar);
 
-  const pathInfo = {
+  const pathInfo: Record<string, { name: string; color: string }> = {
     recovery: { name: 'Recovery Focus', color: '#EC4899' },
     skills: { name: 'Skill Building', color: '#7B68EE' },
     hybrid: { name: 'Hybrid Path', color: '#00D4AA' },
-  }[selectedPath || 'hybrid'];
+  };
+  
+  const selectedPathInfo = pathInfo[selectedPath || 'hybrid'];
 
   const handleSave = () => {
     if (editedUsername.trim().length >= 3) {
@@ -151,11 +153,11 @@ export default function ProfilePage() {
                   <span 
                     className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium"
                     style={{ 
-                      backgroundColor: `${pathInfo?.color}20`,
-                      color: pathInfo?.color 
+                      backgroundColor: `${selectedPathInfo?.color}20`,
+                      color: selectedPathInfo?.color 
                     }}
                   >
-                    {pathInfo?.name}
+                    {selectedPathInfo?.name}
                   </span>
                 </div>
 
@@ -196,19 +198,20 @@ export default function ProfilePage() {
             >
               <h3 className="text-xl font-semibold text-white mb-6">Your Goals</h3>
               <div className="space-y-4">
-                {goals.map((goal, index) => {
-                  const goalInfo = {
+                {goals.map((goal: any, index: number) => {
+                  const goalInfoMap: Record<string, { label: string; color: string }> = {
                     sobriety: { label: 'Days Sober Goal', color: '#EC4899' },
                     skills: { label: 'Skills to Learn', color: '#7B68EE' },
                     projects: { label: 'Projects to Build', color: '#00D4AA' },
-                  }[goal.type];
+                  };
+                  const goalInfo = goalInfoMap[goal.type] || { label: goal.type, color: "#00D4AA" };
                   
                   return (
                     <div key={index} className="flex items-center justify-between p-4 rounded-xl bg-white/5">
-                      <span className="text-gray-300">{goalInfo?.label}</span>
+                      <span className="text-gray-300">{goalInfo.label}</span>
                       <span 
                         className="text-lg font-bold"
-                        style={{ color: goalInfo?.color }}
+                        style={{ color: goalInfo.color }}
                       >
                         {goal.value} {goal.unit}
                       </span>

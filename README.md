@@ -720,7 +720,9 @@ This project is part of HustleCodex V3 - Reality Recovery Playing Game.
 
 ## 📚 Documentation
 
-- [API Documentation](./docs/API.md) - **NEW!** Complete API reference with examples
+- [Ecosystem Usage Guide](./docs/ECOSYSTEM_USAGE_GUIDE.md) - **NEW!** How to combine all repos with pros and cons
+- [API Documentation](./docs/API.md) - Complete API reference with examples
+- [Architecture Overview](./ARCHITECTURE.md) - System design and component map
 - [Next.js Documentation](https://nextjs.org/docs)
 - [Tailwind CSS Documentation](https://tailwindcss.com/docs)
 - [TypeScript Handbook](https://www.typescriptlang.org/docs/)

@@ -804,7 +804,7 @@ Create `components/QuestList.tsx`:
 ```typescript
 // components/QuestList.tsx
 import { useState, useEffect } from 'react';
-import { Trophy, Star, Clock } from 'lucide-react';
+import { Trophy, Star, Clock, CheckCircle } from 'lucide-react';
 import { supabase, Quest } from '@/lib/supabase';
 
 export default function QuestList() {

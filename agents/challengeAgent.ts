@@ -11,7 +11,7 @@
  */
 
 import OpenAI from 'openai';
-import type { MemoryFragment } from '@prisma/client';
+import type { MemoryFragment } from '@/generated/prisma/client';
 
 // ============================================================================
 // CONFIGURATION

@@ -10,8 +10,9 @@
  *   const users = await prisma.user.findMany();
  */
 
-import { PrismaClient } from '@prisma/client';
-import { env, isDevelopment } from './env';
+import { PrismaClient } from '@/generated/prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { isDevelopment } from './env';
 
 // PrismaClient is attached to the `global` object in development
 // to prevent exhausting database connections during hot reloading
@@ -21,25 +22,34 @@ declare global {
 }
 
 /**
- * Prisma client configuration options
- * Customize logging, connection pooling, and query behavior
+ * Create a PrismaPg adapter for PostgreSQL connections
  */
-const prismaOptions = {
-  // Log queries in development for debugging
-  log: isDevelopment 
-    ? ['query', 'error', 'warn'] as const
-    : ['error'] as const,
-  
-  // Add custom error formatting (optional)
-  // errorFormat: 'pretty' as const,
-} satisfies ConstructorParameters<typeof PrismaClient>[0];
+function createAdapter() {
+  return new PrismaPg({
+    connectionString: process.env.DATABASE_URL,
+    // Match Prisma v5/v6 behavior for SSL
+    ssl: process.env.DATABASE_SSL === 'false'
+      ? false
+      : { rejectUnauthorized: false },
+  });
+}
 
 /**
  * Create or reuse Prisma client instance
  * In development: reuse global instance to prevent connection issues
  * In production: create new instance (global is not available)
  */
-export const prisma = global.prisma || new PrismaClient(prismaOptions);
+function createPrismaClient() {
+  const adapter = createAdapter();
+  return new PrismaClient({
+    adapter,
+    log: isDevelopment
+      ? ['query', 'error', 'warn']
+      : ['error'],
+  });
+}
+
+export const prisma = global.prisma || createPrismaClient();
 
 // Assign to global in development to persist across hot reloads
 if (isDevelopment) {
@@ -65,7 +75,7 @@ export async function checkDatabaseConnection(): Promise<boolean> {
     await prisma.$queryRaw`SELECT 1`;
     return true;
   } catch (error) {
-    console.error('❌ Database connection failed:', error);
+    console.error('Database connection failed:', error);
     return false;
   }
 }
@@ -98,9 +108,9 @@ export type {
   TelemetryEvent,
   FeatureFlag,
   Prisma 
-} from '@prisma/client';
+} from '@/generated/prisma/client';
 
 // Log initialization in development
 if (isDevelopment) {
-  console.log('✅ Prisma client initialized');
+  console.log('Prisma client initialized (v7 with PrismaPg adapter)');
 }

@@ -1,18 +1,15 @@
 // HustleCodeX Platform - Prisma Schema
 // Database: PostgreSQL (IONOS or any Postgres 12+)
-// ORM: Prisma 5.x
+// ORM: Prisma 7.x
 
 generator client {
-  provider = "prisma-client-js"
-  // Enable preview features if needed
-  // previewFeatures = ["fullTextSearch"]
+  provider = "prisma-client"
+  output   = "../generated/prisma/client"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  // directUrl for migrations (bypasses connection poolers)
-  directUrl = env("DIRECT_URL")
 }
 
 // ============================================================================

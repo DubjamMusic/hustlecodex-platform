@@ -1,0 +1,234 @@
+// HustleCodeX Platform - Prisma Schema
+// Database: PostgreSQL (IONOS or any Postgres 12+)
+// ORM: Prisma 7.x
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================================================
+// USER & SESSION MODELS
+// ============================================================================
+
+/// User represents a platform user
+/// Can be anonymous (sessionId only) or authenticated
+model User {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Identity
+  email     String?  @unique
+  username  String?  @unique
+  sessionId String?  @unique // For anonymous users
+
+  // Profile
+  displayName String?
+  avatarUrl   String?
+  bio         String?
+
+  // Recovery context (optional, privacy-sensitive)
+  recoveryStartDate DateTime?
+  sobrietyDays      Int?      @default(0)
+
+  // Subscription tier (for monetization)
+  tier              String    @default("free") // free, premium, enterprise
+  tierExpiresAt     DateTime?
+
+  // Relations
+  decisions         Decision[]
+  memoryFragments   MemoryFragment[]
+  telemetryEvents   TelemetryEvent[]
+
+  @@index([email])
+  @@index([sessionId])
+  @@map("users")
+}
+
+// ============================================================================
+// DECISION MODELS (First-Class Objects)
+// ============================================================================
+
+/// Decision represents a user's choice submitted for agent analysis
+/// This is the core entity of the decision loop
+model Decision {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Ownership
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Decision content
+  decisionText String @db.Text // The choice the user is considering
+  context      String @db.Text // Additional context provided by user
+  category     String? // e.g., "recovery", "career", "relationships"
+
+  // Decision metadata
+  riskLevel         Int      @default(0) // 0-10, calculated by agents
+  confidenceScore   Float    @default(0.0) // 0-1, from agent responses
+  isCompleted       Boolean  @default(false)
+  completedAt       DateTime?
+  userFeedback      String? // User's reflection after acting on decision
+  userFeedbackScore Int? // 1-5 rating of decision quality
+
+  // Relations
+  agentResponses  AgentResponse[]
+  memoryFragments MemoryFragment[]
+  telemetryEvents TelemetryEvent[]
+
+  @@index([userId, createdAt])
+  @@index([category])
+  @@map("decisions")
+}
+
+// ============================================================================
+// AGENT MODELS
+// ============================================================================
+
+/// AgentResponse stores the output from each AI agent
+/// Multiple agents analyze each decision (affirm, challenge, etc.)
+model AgentResponse {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  // Links to decision
+  decisionId String
+  decision   Decision @relation(fields: [decisionId], references: [id], onDelete: Cascade)
+
+  // Agent metadata
+  agentType String // "affirm", "challenge", "coach", "mentor", "risk_assessor"
+  model     String // e.g., "gpt-4", "claude-opus-20240229"
+  provider  String // "openai", "anthropic", etc.
+
+  // Agent output
+  responseText     String  @db.Text // The agent's perspective/advice
+  confidenceScore  Float // 0-1, how confident the agent is
+  reasoning        String? @db.Text // Agent's reasoning (if provided)
+  suggestedActions String[] // Actionable next steps
+
+  // Performance metrics
+  latencyMs Int // How long the agent took to respond
+  tokenCount Int? // Tokens used (for cost tracking)
+
+  // Disagreement tracking (for agent comparison)
+  disagreesWithOtherAgents Boolean @default(false)
+  disagreementReason       String?
+
+  @@index([decisionId, agentType])
+  @@index([agentType, createdAt])
+  @@map("agent_responses")
+}
+
+// ============================================================================
+// MEMORY MODELS (Context Management)
+// ============================================================================
+
+/// MemoryFragment represents a piece of context from past decisions
+/// Used to provide continuity and personalization
+model MemoryFragment {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Ownership
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Source decision (optional - some fragments may be system-generated)
+  decisionId String?
+  decision   Decision? @relation(fields: [decisionId], references: [id], onDelete: SetNull)
+
+  // Memory content
+  content     String   @db.Text // The actual memory snippet
+  category    String? // Same as decision category for filtering
+  tags        String[] // Keywords for semantic search
+
+  // Scoring for relevance (see lib/memory.ts)
+  relevanceScore  Float    @default(1.0) // How relevant to user's current situation
+  confidenceScore Float    @default(1.0) // How confident we are in this memory
+  decayFactor     Float    @default(1.0) // Time-based degradation
+  lastAccessedAt  DateTime @default(now()) // For LRU caching
+
+  // Lifecycle
+  isArchived Boolean  @default(false)
+  archivedAt DateTime?
+
+  @@index([userId, relevanceScore])
+  @@index([userId, category])
+  @@index([lastAccessedAt])
+  @@map("memory_fragments")
+}
+
+// ============================================================================
+// TELEMETRY & ANALYTICS
+// ============================================================================
+
+/// TelemetryEvent tracks user behavior and system performance
+/// Used for analytics, A/B testing, and improving the decision loop
+model TelemetryEvent {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  // Ownership
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  // Event type
+  eventType String // "decision_created", "agent_called", "memory_accessed", etc.
+  eventName String // Human-readable name
+
+  // Associated entities
+  decisionId String?
+  decision   Decision? @relation(fields: [decisionId], references: [id], onDelete: SetNull)
+
+  // Event payload (flexible JSON)
+  properties Json // Arbitrary event data
+
+  // Performance metrics
+  latencyMs Int?
+  success   Boolean @default(true)
+  errorMessage String?
+
+  // Session context
+  sessionId String?
+  userAgent String?
+  ipAddress String?
+
+  @@index([userId, eventType, createdAt])
+  @@index([eventType, createdAt])
+  @@index([decisionId])
+  @@map("telemetry_events")
+}
+
+// ============================================================================
+// FEATURE FLAGS (Database-backed, optional)
+// ============================================================================
+
+/// FeatureFlag for database-backed feature toggles
+/// Note: We primarily use Vercel Edge Config for production
+/// This model is for per-user or A/B testing overrides
+model FeatureFlag {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Flag definition
+  name        String  @unique
+  description String?
+  enabled     Boolean @default(false)
+
+  // Rollout percentage (0-100)
+  rolloutPercentage Int @default(0)
+
+  // Per-user overrides (stored as JSON)
+  userOverrides Json @default("{}")
+
+  @@map("feature_flags")
+}

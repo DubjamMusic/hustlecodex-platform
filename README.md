@@ -720,6 +720,7 @@ This project is part of HustleCodex V3 - Reality Recovery Playing Game.
 
 ## 📚 Documentation
 
+- [🚀 MVP Launch Checklist](./docs/launch-checklist.md) - Viable MVP (A) definition, release steps & 5-minute verification checklist
 - [Ecosystem Usage Guide](./docs/ECOSYSTEM_USAGE_GUIDE.md) - **NEW!** How to combine all repos with pros and cons
 - [API Documentation](./docs/API.md) - Complete API reference with examples
 - [Architecture Overview](./ARCHITECTURE.md) - System design and component map

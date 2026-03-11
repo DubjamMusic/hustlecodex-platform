@@ -1,0 +1,97 @@
+name: Smoke Test
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    name: MVP Smoke Test (<5 min)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Detect package manager
+        id: pkg
+        run: |
+          if [ -f pnpm-lock.yaml ]; then
+            echo "manager=pnpm" >> "$GITHUB_OUTPUT"
+            echo "install=pnpm install --frozen-lockfile" >> "$GITHUB_OUTPUT"
+          elif [ -f yarn.lock ]; then
+            echo "manager=yarn" >> "$GITHUB_OUTPUT"
+            echo "install=yarn install --frozen-lockfile" >> "$GITHUB_OUTPUT"
+          else
+            echo "manager=npm" >> "$GITHUB_OUTPUT"
+            echo "install=npm ci" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: ${{ steps.pkg.outputs.manager }}
+
+      - name: Install pnpm
+        if: steps.pkg.outputs.manager == 'pnpm'
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Install dependencies
+        run: ${{ steps.pkg.outputs.install }}
+        env:
+          DATABASE_URL: postgresql://user:password@localhost:5432/db
+
+      - name: Build
+        run: ${{ steps.pkg.outputs.manager }} run build
+        env:
+          DATABASE_URL: postgresql://user:password@localhost:5432/db
+          NEXT_PUBLIC_APP_URL: http://localhost:3000
+          # Disable telemetry to keep build fast and offline-safe
+          NEXT_TELEMETRY_DISABLED: '1'
+
+      - name: Start server & verify landing page renders
+        run: |
+          ${{ steps.pkg.outputs.manager }} run start &
+          SERVER_PID=$!
+          echo "SERVER_PID=$SERVER_PID" >> "$GITHUB_ENV"
+
+          # Wait for server to be ready (up to 30s)
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:3000/ -o /dev/null; then
+              echo "Server is up after ${i}s"
+              break
+            fi
+            sleep 1
+          done
+
+          # Verify landing page returns HTTP 200
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/)
+          echo "Landing page HTTP status: $HTTP_STATUS"
+          if [ "$HTTP_STATUS" != "200" ]; then
+            echo "::error::Landing page returned HTTP $HTTP_STATUS, expected 200"
+            kill "$SERVER_PID" 2>/dev/null || true
+            exit 1
+          fi
+
+          # Verify page contains meaningful HTML (not empty/error page)
+          BODY=$(curl -s http://localhost:3000/)
+          if echo "$BODY" | grep -qi "<html"; then
+            echo "Landing page contains HTML — smoke test passed ✅"
+          else
+            echo "::error::Landing page response does not contain HTML"
+            kill "$SERVER_PID" 2>/dev/null || true
+            exit 1
+          fi
+
+          kill "$SERVER_PID" 2>/dev/null || true
+        env:
+          DATABASE_URL: postgresql://user:password@localhost:5432/db
+          NEXT_PUBLIC_APP_URL: http://localhost:3000
+          NEXT_TELEMETRY_DISABLED: '1'
+          PORT: 3000

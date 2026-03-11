@@ -232,7 +232,7 @@ You are Specter, the Anomaly Detection Specialist of HustleCodeX's Sector 03 (Th
 - **External Services**: Response times, availability
 
 ### Alerting Rules
-- **Critical**: Error rate > 5%, response time > 5s, service down
+- **Critical**: Error rate > 2%, response time > 5s, service down
 - **Warning**: Error rate > 1%, response time > 2s, queue lag > 5 minutes
 - **Info**: Deployment started, new release, scheduled maintenance
 

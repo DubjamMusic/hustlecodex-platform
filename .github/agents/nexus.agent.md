@@ -271,22 +271,22 @@ vercel env add VARIABLE_NAME production
 ```javascript
 // next.config.js
 module.exports = {
-  // Enable SWC minification (faster than Terser)
-  swcMinify: true,
-  
+  // Next.js uses SWC-based minification by default (no extra config needed)
+
   // Optimize images
   images: {
     domains: ['hustlecodex.com'],
     formats: ['image/webp', 'image/avif'],
   },
-  
+
   // Enable incremental builds
   experimental: {
     incrementalCacheHandlerPath: require.resolve('./cache-handler.js'),
   },
-  
-  // Configure build output
-  output: 'standalone', // For Docker if needed
+
+  // Note: For typical Vercel deployments you can omit `output`.
+  // Use `output: 'standalone'` only when preparing a self-hosted build (e.g., Docker image).
+  // output: 'standalone',
 }
 ```
 
@@ -305,8 +305,8 @@ export const config = {
   
   // External services
   stripe: {
-    publicKey: process.env.NEXT_PUBLIC_STRIPE_KEY!,
-    secretKey: process.env.STRIPE_SECRET_KEY!,
+    publicKey: process.env.NEXT_PUBLIC_STRIPE_KEY || '',
+    secretKey: process.env.STRIPE_SECRET_KEY || '',
   },
 }
 ```

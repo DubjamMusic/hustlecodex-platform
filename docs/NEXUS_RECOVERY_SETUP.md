@@ -373,7 +373,8 @@ let allPresent = true;
 requiredVars.forEach(varName => {
   const value = process.env[varName];
   const status = value ? '✅' : '❌';
-  const display = value ? `${value.substring(0, 20)}...` : 'MISSING';
+  // Never log any part of secret values; only indicate presence or absence.
+  const display = value ? '[SET]' : 'MISSING';
   console.log(`${status} ${varName}: ${display}`);
   if (!value) allPresent = false;
 });

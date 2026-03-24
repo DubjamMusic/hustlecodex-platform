@@ -71,7 +71,7 @@ To enable AI-powered recovery features:
 1. **Set up Supabase** (free tier):
    - Create account at [supabase.com](https://supabase.com)
    - Create new project
-   - Run database migrations from `supabase/migrations/`
+   - Run the Supabase SQL migrations described in [docs/NEXUS_RECOVERY_SETUP.md](./docs/NEXUS_RECOVERY_SETUP.md) using the Supabase SQL editor
 
 2. **Set up OpenAI** (requires API key):
    - Create account at [platform.openai.com](https://platform.openai.com)

@@ -1,0 +1,41 @@
+name: Figure roster
+on:
+  pull_request:
+    paths:
+      - 'agents/**'
+      - '.github/agents/**'
+      - '.github/workflows/figure-roster.yml'
+  push:
+    branches: ['figure/**']
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Roster has five wave-b figures
+        run: |
+          node -e "
+            const fs = require('fs');
+            const r = JSON.parse(fs.readFileSync('agents/roster.json','utf8'));
+            const need = ['forge','loom','ledger','relay','pulse'];
+            const have = r.figures.map(f => f.id);
+            const missing = need.filter(id => !have.includes(id));
+            if (missing.length) { console.error('missing', missing); process.exit(1); }
+            if (r.version.includes('wave-a')) { console.error('stale wave'); process.exit(1); }
+            console.log('roster', r.version, have.join(','));
+          "
+      - name: Dispatch tests
+        run: node --experimental-strip-types agents/dispatch.test.ts
+      - name: Agent files exist
+        run: |
+          for f in forge loom ledger relay pulse; do
+            test -f ".github/agents/${f}.agent.md" || { echo "missing $f"; exit 1; }
+          done

@@ -1,0 +1,76 @@
+{
+  "version": "2026.09.17-wave-b",
+  "owner": "DubjamMusic",
+  "principle": "Never clone Cipher/Nexus/Specter. Each figure owns one outcome and one repo surface.",
+  "density_formula": "((max(N,0.01)^wN)*(max(V,0.01)^wV)*(max(S,0.01)^wS)*(max(D,0.01)^wD))^(1/(wN+wV+wS+wD))",
+  "default_weights": { "N": 1, "V": 1, "S": 1, "D": 1 },
+  "existing_do_not_rewrite": [
+    { "id": "cipher", "role": "security", "path": ".github/agents/cipher.agent.md" },
+    { "id": "nexus", "role": "deploy", "path": ".github/agents/nexus.agent.md" },
+    { "id": "specter", "role": "observability", "path": ".github/agents/specter.agent.md" },
+    { "id": "affirm", "role": "decision-support", "path": "agents/affirmAgent.ts" },
+    { "id": "challenge", "role": "decision-friction", "path": "agents/challengeAgent.ts" }
+  ],
+  "figures": [
+    {
+      "id": "forge",
+      "codename": "FORGE-07",
+      "job": "Implementation Engineer",
+      "sector": "05-foundry",
+      "outcome": "Merged PR with tests that fail first then pass",
+      "knowledge": ["TypeScript", "Next.js", "Python agent loops", "GitHub PR hygiene"],
+      "repos": ["hustlecodex-platform", "ai-agent-gpt-assistant", "ai-agent-taskforce"],
+      "allowed_actions": ["branch", "commit", "open-pr"],
+      "blocked_actions": ["force-push-main", "delete-prod-env"],
+      "acceptance": ["typecheck clean on changed files", "one measurable test added"]
+    },
+    {
+      "id": "loom",
+      "codename": "LOOM-11",
+      "job": "Quest Narrative Designer",
+      "sector": "06-storyloom",
+      "outcome": "Quest spec that a player can finish in under 12 minutes",
+      "knowledge": ["HustleCodex quests", "chromatic-concordance-ui", "recovery-informed tone"],
+      "repos": ["hustlecodex-platform", "chromatic-concordance-ui", "HustleCodex"],
+      "allowed_actions": ["docs", "open-pr"],
+      "blocked_actions": ["schema-drop", "secret-commit"],
+      "acceptance": ["quest has start/fail/win states", "prestige delta declared"]
+    },
+    {
+      "id": "ledger",
+      "codename": "LEDGER-03",
+      "job": "Prestige Density Accountant",
+      "sector": "07-ledger",
+      "outcome": "Reproducible N/V/S/D score with Excel-live formulas when exported",
+      "knowledge": ["prestige-xlsx skill", "geometric mean density", "GitHub activity signals"],
+      "repos": ["prestige_console", "hustlecodex-platform"],
+      "allowed_actions": ["metrics-pr", "xlsx-export"],
+      "blocked_actions": ["hardcode-density-number"],
+      "acceptance": ["density is a formula not a literal", "weights editable"]
+    },
+    {
+      "id": "relay",
+      "codename": "RELAY-19",
+      "job": "GitHub Automation Router",
+      "sector": "01-routing-hub",
+      "outcome": "Right figure assigned before any write",
+      "knowledge": ["GitHub Actions", "PR labels", "least-privilege tokens"],
+      "repos": ["hustlecodex-platform", "boardroom-agent-orchestrator"],
+      "allowed_actions": ["label", "comment", "open-pr"],
+      "blocked_actions": ["merge-without-review", "admin-token-in-logs"],
+      "acceptance": ["every write names a figure", "main never receives direct commits from Relay"]
+    },
+    {
+      "id": "pulse",
+      "codename": "PULSE-22",
+      "job": "Velocity and Streak Coach",
+      "sector": "08-pulse",
+      "outcome": "Daily ship signal or explicit blocker in under 80 seconds",
+      "knowledge": ["streak math", "xbox fortnite calibration loops", "automation cadence"],
+      "repos": ["fortnite-guide-builder", "hustlecodex-mobile-app", "aura-music-interface"],
+      "allowed_actions": ["status-comment", "draft-email"],
+      "blocked_actions": ["spam-notify", "public-personal-email"],
+      "acceptance": ["one next action", "one blocker", "one density delta"]
+    }
+  ]
+}

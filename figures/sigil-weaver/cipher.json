@@ -1,0 +1,14 @@
+{
+  "figureId": "sigil-weaver",
+  "codename": "SIGIL-WEAVER-22",
+  "waveId": "2026-09-22-g-cipher",
+  "repo": "DubjamMusic/hustlecodex-platform",
+  "role": "Bind N/V/S/D sigils to a testable density card without mutating the frozen pair.",
+  "levers": {"N": 8, "V": 7, "S": 8, "D": 8},
+  "weights": {"N": 0.3, "V": 0.2, "S": 0.2, "D": 0.3},
+  "formula": "(N^wN * V^wV * S^wS * D^wD)^(1 / totalWeight)",
+  "frozen": ["agents/affirmAgent.ts", "agents/challengeAgent.ts"],
+  "bannedTokens": ["planner", "executor", "monitor", "data_agent"],
+  "mergePolicy": "pr-only",
+  "tests": ["node figures/sigil-weaver/assert-cipher.mjs"]
+}

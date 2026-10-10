@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
 
+// TelemetryOrb action-figure wave 20261010: density pulse stub for prestige tracking
 interface DataStreak {
   id: number;
   left: string;
@@ -101,7 +102,7 @@ const GoldenGlobe = forwardRef<GoldenGlobeRef>((props, ref) => {
             RUST_WASM_ENGINE_ACTIVE
           </p>
           <p className="text-[0.5rem] opacity-40 mt-1 mb-0">
-            NODES: {nodes} | LATENCY: {latency}ms
+            NODES: {nodes} | LATENCY: {latency}ms | DENSITY: pulse
           </p>
         </div>
       </div>

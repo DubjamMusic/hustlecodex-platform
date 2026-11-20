@@ -48,6 +48,8 @@ model User {
   decisions         Decision[]
   memoryFragments   MemoryFragment[]
   telemetryEvents   TelemetryEvent[]
+  tenantsOwned      Tenant[] @relation("TenantOwner")
+  tenantMemberships TenantMember[]
 
   @@index([email])
   @@index([sessionId])
@@ -235,4 +237,158 @@ model FeatureFlag {
   userOverrides Json @default("{}")
 
   @@map("feature_flags")
+}
+
+
+// ============================================================================
+// CLAWJAM SAAS KERNEL — additive multi-tenant models
+// ============================================================================
+
+model Tenant {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  status      String   @default("active")
+  ownerId     String
+  owner       User     @relation("TenantOwner", fields: [ownerId], references: [id], onDelete: Restrict)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  members       TenantMember[]
+  credentials   ApiCredential[]
+  subscriptions Subscription[]
+  usageEvents   UsageEvent[]
+  jobs          AgentJob[]
+  auditEvents   AuditEvent[]
+  bots          BotInstance[]
+
+  @@index([ownerId, createdAt])
+  @@index([status])
+  @@map("clawjam_tenants")
+}
+
+model TenantMember {
+  id        String   @id @default(cuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      String   @default("member") // owner, admin, operator, member, billing
+  status    String   @default("active")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([tenantId, userId])
+  @@index([userId, status])
+  @@map("clawjam_tenant_members")
+}
+
+model ApiCredential {
+  id          String    @id @default(cuid())
+  tenantId    String
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name        String
+  secretHash  String    @unique
+  scopes      String[]
+  lastUsedAt  DateTime?
+  expiresAt   DateTime?
+  revokedAt   DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([tenantId, revokedAt])
+  @@map("clawjam_api_credentials")
+}
+
+model Subscription {
+  id                     String   @id @default(cuid())
+  tenantId               String
+  tenant                 Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  provider               String
+  providerCustomerId     String?
+  providerSubscriptionId String?  @unique
+  planCode               String   @default("free")
+  status                 String   @default("inactive")
+  currentPeriodStart     DateTime?
+  currentPeriodEnd       DateTime?
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  @@index([tenantId, status])
+  @@map("clawjam_subscriptions")
+}
+
+model UsageEvent {
+  id             String   @id @default(cuid())
+  tenantId       String
+  tenant         Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  actorUserId    String?
+  idempotencyKey String
+  meter          String
+  quantity       Float
+  unit           String
+  estimatedCost  Float    @default(0)
+  metadata       Json?
+  occurredAt     DateTime @default(now())
+
+  @@unique([tenantId, idempotencyKey])
+  @@index([tenantId, meter, occurredAt])
+  @@map("clawjam_usage_events")
+}
+
+model AgentJob {
+  id             String    @id @default(cuid())
+  tenantId       String
+  tenant         Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  requestedBy    String?
+  runtime        String    @default("openclaw")
+  taskType       String
+  status         String    @default("requested")
+  idempotencyKey String
+  input          Json
+  result         Json?
+  budgetLimit    Float?
+  actualCost     Float?
+  attempts       Int       @default(0)
+  createdAt      DateTime  @default(now())
+  startedAt      DateTime?
+  finishedAt     DateTime?
+  updatedAt      DateTime  @updatedAt
+
+  @@unique([tenantId, idempotencyKey])
+  @@index([tenantId, status, createdAt])
+  @@map("clawjam_agent_jobs")
+}
+
+model AuditEvent {
+  id           String   @id @default(cuid())
+  tenantId     String
+  tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  actorUserId  String?
+  action       String
+  resourceType String
+  resourceId   String?
+  requestId    String?
+  metadata     Json?
+  createdAt    DateTime @default(now())
+
+  @@index([tenantId, createdAt])
+  @@index([tenantId, resourceType, resourceId])
+  @@map("clawjam_audit_events")
+}
+
+model BotInstance {
+  id                   String   @id @default(cuid())
+  tenantId             String
+  tenant               Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name                 String
+  channel              String   @default("telegram")
+  externalBotId        String?
+  encryptedCredential String
+  status               String   @default("pending")
+  config               Json?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@index([tenantId, channel, status])
+  @@map("clawjam_bot_instances")
 }
